@@ -6,8 +6,6 @@
 
 +!determine_coverage <- !determine_coverage.
 
-+covered(true):
-    .print("The coverage is OK").
++covered(true) <- .print("The coverage is OK").
 
-+covered(false):
-    .print("The coverage is incomplete").
++covered(false) <- .print("The coverage is incomplete").
