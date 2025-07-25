@@ -1,0 +1,7 @@
+spade==4.1.0
+spade-bdi==0.3.2
+pyjabber==0.3.0
+python-dotenv==1.1.1
+mistralai==1.9.3
+agentspeak==0.2.1
+slixmpp==1.9.1
