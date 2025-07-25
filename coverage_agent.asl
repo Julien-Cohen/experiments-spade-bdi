@@ -1,7 +1,7 @@
 !determine_coverage.
 
 +!determine_coverage : req(REQ) & spec(S) <-
-    .examine(S, REQ, RES);
+    .examine_coverage(S, REQ, RES);
     +covered(RES).
 
 +!determine_coverage <- !determine_coverage.
