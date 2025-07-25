@@ -21,6 +21,12 @@ XMPP_ADDR=...
 AGENT_PASSWD=...
 ```
 
+You should also give as an environment variaple you API key for the target LLM (currently Mistral) :
+
+```
+MISTRAL_API_KEY=...
+```
+
 ## Run tips
 
 Reminder (from Spade): launch the chat server before running the agent with run spade (see prepare.sh)
