@@ -3,14 +3,11 @@ import asyncio
 
 import spade
 
-from spade_bdi.bdi import BDIAgent
-
 from dotenv import load_dotenv
 
 import os
 
-import agentspeak
-from ask_mistral import ask_mistral
+from coverage_agent import CoverageBDIAgent
 
 load_dotenv()
 
@@ -40,27 +37,8 @@ async def start(a):
     await a.start()
 
 
-class MyCustomBDIAgent(BDIAgent):
-    def add_custom_actions(self, actions):
-        @actions.add_function(
-            ".examine",
-            (
-                    agentspeak.Literal,
-                    agentspeak.Literal,
-            ),
-        )
-        def _examine(s, r):
-            return ask_mistral(str(s), str(r))
-
-        @actions.add(".my_action", 1)
-        def _my_action(agent, term, intention):
-            arg = agentspeak.grounded(term.args[0], intention.scope)
-            print(arg)
-            yield
-
-
 async def main(server, password):
-    a = MyCustomBDIAgent(f"bdiagent@{server}", password, "coverage_manager.asl")
+    a = CoverageBDIAgent(f"bdiagent@{server}", password, "coverage_agent.asl")
     print_state(a)
     add(a, "spec", "A function to compare two words.")
     add(a, "req", "* The fonction should take two parameters.")
@@ -69,8 +47,6 @@ async def main(server, password):
     await asyncio.sleep(1)
 
     print_state(a)
-
-    await start(a)
 
     await a.stop()
 
