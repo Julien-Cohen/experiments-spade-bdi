@@ -10,4 +10,12 @@
 
 +covered(false) <- .print("The coverage is incomplete") ; !ask_for_completion.
 
-+!ask_for_completion <- +completeme.
++req(R) <- .print ("requirements updated").
+
++!ask_for_completion : spec(S) & req(R) <-
+    .add_req(S,R,ANSWER) ;
+    -req(R);
+    -covered(false);
+    +req(ANSWER).
+
++!ask_for_completion <- +hadnoresponse.

@@ -45,7 +45,11 @@ async def main(server, password):
     await start(a)
 
     await asyncio.sleep(1)
+    print_state(a)
+    await start(a)
 
+    await asyncio.sleep(2)
+    await start(a)
     print_state(a)
 
     await a.stop()
