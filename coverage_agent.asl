@@ -8,7 +8,8 @@
     !determine_coverage.
 
 +covered(true) <-
-    .print("The specification is well covered. We can stop.").
+    .print("The specification is well covered. We can stop.") ;
+    +finished.
 
 +covered(false) <-
     .print("The coverage is incomplete.") ;
