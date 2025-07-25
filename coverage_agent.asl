@@ -8,4 +8,6 @@
 
 +covered(true) <- .print("The coverage is OK").
 
-+covered(false) <- .print("The coverage is incomplete").
++covered(false) <- .print("The coverage is incomplete") ; !ask_for_completion.
+
++!ask_for_completion <- +completeme.

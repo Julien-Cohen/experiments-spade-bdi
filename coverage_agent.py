@@ -38,6 +38,7 @@ def ask_llm(spec, req_list):
         + spec
         + "I also gave the following requirements: "
         + req_list
+        + " "
         + "Mistral gave me the following answer: "
         + chat_response.choices[0].message.content
     )
