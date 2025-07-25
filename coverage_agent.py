@@ -11,23 +11,23 @@ def log(m):
     print("[LOG] " + m)
 
 
-def ask_llm(spec, req_list):
+def ask_llm_for_coverage(spec, req_list):
     chat_response = llm_client.chat.complete(
         model=llm_model,
         messages=[
             {
                 "role": "system",
                 "content": "Given a specification of a system, and a list of atomic requirements, tell if that list of atomic requirements covers well that specification."
-                           + " Answer COMPLETE is the specification is well covered."
-                           + " Answer PARTIAL otherwise.",
+                + " Answer COMPLETE is the specification is well covered."
+                + " Answer PARTIAL otherwise.",
             },
             {
                 "role": "user",
                 "content": "Specification: "
-                           + spec
-                           + "(end of the specification) List of requirements: "
-                           + req_list
-                           + "(end of list of requirements).",
+                + spec
+                + "(end of the specification) List of requirements: "
+                + req_list
+                + "(end of list of requirements).",
             },
         ],
         max_tokens=3,
@@ -85,17 +85,17 @@ from spade_bdi.bdi import BDIAgent
 class CoverageBDIAgent(BDIAgent):
     def add_custom_actions(self, actions):
         @actions.add_function(
-            ".examine_coverage",
+            ".external_examine_coverage",
             (
                 agentspeak.Literal,
                 agentspeak.Literal,
             ),
         )
         def _examine_coverage(s, r):
-            return ask_llm(str(s), str(r))
+            return ask_llm_for_coverage(str(s), str(r))
 
         @actions.add_function(
-            ".add_req",
+            ".external_add_req",
             (
                 agentspeak.Literal,
                 agentspeak.Literal,
