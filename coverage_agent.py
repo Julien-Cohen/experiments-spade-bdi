@@ -30,7 +30,7 @@ def ask_llm(spec, req_list):
                            + "(end of list of requirements).",
             },
         ],
-        max_tokens=2,
+        max_tokens=3,
     )
     log(
         "I had an interaction with mistral. "
@@ -45,6 +45,39 @@ def ask_llm(spec, req_list):
     return chat_response.choices[0].message.content.startswith("COMPLETE")
 
 
+def ask_llm_for_completion(spec, req_list):
+    chat_response = llm_client.chat.complete(
+        model=llm_model,
+        messages=[
+            {
+                "role": "system",
+                "content": "Given a specification of a system, and a list of atomic requirements, give an atomic requirements that covers the specification and which is not included in the given list of requirements."
+                + " Answer with the new requirement, don't explain.",
+            },
+            {
+                "role": "user",
+                "content": "Specification: "
+                + spec
+                + "(end of the specification) List of requirements: "
+                + req_list
+                + "(end of list of requirements).",
+            },
+        ],
+        max_tokens=50,
+    )
+    log(
+        "I had an interaction with mistral. "
+        + "I gave the following spec: "
+        + spec
+        + "I also gave the following requirements: "
+        + req_list
+        + " "
+        + "Mistral gave me the following answer: "
+        + chat_response.choices[0].message.content
+    )
+    return chat_response.choices[0].message.content
+
+
 import agentspeak
 from spade_bdi.bdi import BDIAgent
 
@@ -52,11 +85,23 @@ from spade_bdi.bdi import BDIAgent
 class CoverageBDIAgent(BDIAgent):
     def add_custom_actions(self, actions):
         @actions.add_function(
-            ".examine",
+            ".examine_coverage",
             (
-                    agentspeak.Literal,
-                    agentspeak.Literal,
+                agentspeak.Literal,
+                agentspeak.Literal,
             ),
         )
-        def _examine(s, r):
+        def _examine_coverage(s, r):
             return ask_llm(str(s), str(r))
+
+        @actions.add_function(
+            ".add_req",
+            (
+                agentspeak.Literal,
+                agentspeak.Literal,
+            ),
+        )
+        def _add_req(s, r):
+            return agentspeak.Literal(
+                str(r) + " * " + ask_llm_for_completion(str(s), str(r))
+            )
