@@ -16,6 +16,6 @@
     .add_req(S,R,ANSWER) ;
     -req(R);
     -covered(false);
-    +req(ANSWER).
+    +req(ANSWER) ; !determine_coverage.
 
 +!ask_for_completion <- +hadnoresponse.
