@@ -1,13 +1,14 @@
 import argparse
 import asyncio
+import getpass
 
 import spade
+
+from spade_bdi.bdi import BDIAgent
 
 from dotenv import load_dotenv
 
 import os
-
-from coverage_agent import CoverageBDIAgent
 
 load_dotenv()
 
@@ -15,7 +16,7 @@ tmp_addr = os.getenv("XMPP_ADDR")
 chat_server_address = tmp_addr if tmp_addr else "0.0.0.0"
 
 tmp_passwd = os.getenv("AGENT_PASSWD")
-agent_password = tmp_passwd if tmp_passwd else ""
+agent_password = tmp_passwd if tmp_passwd else "fake"
 
 
 def print_state(a):
@@ -38,19 +39,24 @@ async def start(a):
 
 
 async def main(server, password):
-    a = CoverageBDIAgent(f"bdiagent@{server}", password, "coverage_agent.asl")
+    a = BDIAgent(f"bdiagent@{server}", password, "basic.asl")
     print_state(a)
-    add(a, "spec", "A function to compare two words.")
-    add(a, "req", "* The fonction should take two parameters.")
+    add(a, "sun", "white")
+    print_state(a)
     await start(a)
 
     await asyncio.sleep(1)
-    print_state(a)
-    await start(a)
 
-    await asyncio.sleep(2)
+    print_state(a)
+
+    remove(a, "car", "red")
     await start(a)
     print_state(a)
+    add(a, "car", "yellow")
+    add(a, "car", "green")
+    print_state(a)
+    add(a, "sun", "yellow")
+    await start(a)
 
     await a.stop()
 
