@@ -3,7 +3,7 @@
 ## Installation tips
 
 The latest versions of some packages break spade (see https://github.com/javipalanca/spade/issues/127). So use those
-ones instead (overridden by requirements.txt):
+ones instead :
 
 ```
 spade==4.0.3
