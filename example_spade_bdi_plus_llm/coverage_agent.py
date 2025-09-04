@@ -1,81 +1,6 @@
-import os
-from mistralai import Mistral
-
-llm_api_key = os.environ["MISTRAL_API_KEY"]
-llm_model = "mistral-small-latest"
-
-llm_client = Mistral(api_key=llm_api_key)
+import llm_chat
 
 
-def log(m):
-    print("[LOG] " + m)
-
-
-def ask_llm_for_coverage(spec, req_list):
-    chat_response = llm_client.chat.complete(
-        model=llm_model,
-        messages=[
-            {
-                "role": "system",
-                "content": "Given a specification of a system, and a list of atomic requirements, tell if that list of atomic requirements covers well that specification."
-                + " Answer COMPLETE is the specification is well covered."
-                + " Answer PARTIAL otherwise.",
-            },
-            {
-                "role": "user",
-                "content": "Specification: "
-                + spec
-                + "(end of the specification) List of requirements: "
-                + req_list
-                + "(end of list of requirements).",
-            },
-        ],
-        max_tokens=3,
-    )
-    log(
-        "I had an interaction with mistral. "
-        + "I gave the following spec: "
-        + spec
-        + "I also gave the following requirements: "
-        + req_list
-        + " "
-        + "Mistral gave me the following answer: "
-        + chat_response.choices[0].message.content
-    )
-    return chat_response.choices[0].message.content.startswith("COMPLETE")
-
-
-def ask_llm_for_completion(spec, req_list):
-    chat_response = llm_client.chat.complete(
-        model=llm_model,
-        messages=[
-            {
-                "role": "system",
-                "content": "Given a specification of a system, and a list of atomic requirements, give an atomic requirements that covers the specification and which is not included in the given list of requirements."
-                + " Answer with the new requirement, don't explain.",
-            },
-            {
-                "role": "user",
-                "content": "Specification: "
-                + spec
-                + "(end of the specification) List of requirements: "
-                + req_list
-                + "(end of list of requirements).",
-            },
-        ],
-        max_tokens=50,
-    )
-    log(
-        "I had an interaction with mistral. "
-        + "I gave the following spec: "
-        + spec
-        + "I also gave the following requirements: "
-        + req_list
-        + " "
-        + "Mistral gave me the following answer: "
-        + chat_response.choices[0].message.content
-    )
-    return chat_response.choices[0].message.content
 
 
 import agentspeak
@@ -83,7 +8,19 @@ from spade_bdi.bdi import BDIAgent
 
 
 class CoverageBDIAgent(BDIAgent):
+    """ An agent based on AgentSpeak behavior defined in coverage_agent.asl
+
+    Two custom actions are also defined: .external_examine_coverage and .external_add_req
+    Those actions rely on a dialogue with an LLM.
+    """
+
+    def __init__(self, id, password):
+        super().__init__(id, password, "coverage_agent.asl")
+
+    # this method is called by super class __init__(...)
     def add_custom_actions(self, actions):
+
+        # first custom action
         @actions.add_function(
             ".external_examine_coverage",
             (
@@ -92,8 +29,9 @@ class CoverageBDIAgent(BDIAgent):
             ),
         )
         def _examine_coverage(s, r):
-            return ask_llm_for_coverage(str(s), str(r))
+            return llm_chat.ask_llm_for_coverage(str(s), str(r))
 
+        # second custom action
         @actions.add_function(
             ".external_add_req",
             (
@@ -103,5 +41,5 @@ class CoverageBDIAgent(BDIAgent):
         )
         def _add_req(s, r):
             return agentspeak.Literal(
-                str(r) + " * " + ask_llm_for_completion(str(s), str(r))
+                str(r) + " * " + llm_chat.ask_llm_for_completion(str(s), str(r))
             )

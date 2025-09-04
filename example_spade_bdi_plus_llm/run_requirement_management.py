@@ -21,27 +21,27 @@ agent_password = tmp_passwd if tmp_passwd else "fake"
 def print_state(a):
     print("CURRENT_BELIEFS:" + str(a.bdi.get_beliefs()))
 
-
+# wrapper definition
 def add(a, k, v):
     print("ADDING BELIEFS: " + k + "=" + v)
     a.bdi.set_belief(k, v)
 
-
+# wrapper definition
 def remove(a, k, v):
     print("REMOVING BELIEFS: " + k + "=" + v)
     a.bdi.remove_belief(k, v)
 
-
+# wrapper definition
 async def start(a):
     print("STARTING AGENT")
     await a.start()
 
 
 async def main(server, password):
-    a = CoverageBDIAgent(f"bdiagent@{server}", password, "coverage_agent.asl")
+    a = CoverageBDIAgent(f"bdiagent@{server}", password)
     print_state(a)
     add(a, "spec", "A function to compare two words.")
-    add(a, "req", "* The fonction should take two parameters.")
+    add(a, "req",  "* The function should take two parameters.")
     await start(a)
 
     await asyncio.sleep(1)
@@ -54,7 +54,7 @@ async def main(server, password):
 
     await a.stop()
 
-
+# config
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--server", help="XMPP Server")
