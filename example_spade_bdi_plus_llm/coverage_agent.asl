@@ -20,6 +20,5 @@
 
 +!ask_for_completion : spec(S) & req(R) <-
     .external_add_req(S,R,ANSWER) ;
-    -req(R);
     -covered(false);
-    +req(ANSWER) ; !determine_coverage.
+    -+req(ANSWER) ; !determine_coverage.

@@ -36,6 +36,7 @@ def ask_llm_for_coverage(spec, req_list):
         "I had an interaction with mistral. "
         + "I gave the following spec: "
         + spec
+        + " "
         + "I also gave the following requirements: "
         + req_list
         + " "
